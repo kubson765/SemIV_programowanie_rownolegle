@@ -1,0 +1,6 @@
+1 wątek - Time: 19750ms
+2 wątki - Time: 8413ms
+4 wątki - Time: 4735ms
+8 wątków - Time: 3890ms
+16 wątków - Time: 3535ms
+32 wątki - Time: 3529ms
