@@ -4,7 +4,7 @@ THREADS=(1 2 4 8 16)
 SIZES=(512 1024 2048)
 RUNS=3
 
-OUTPUT=results_laptop_podlaczony.csv
+OUTPUT=results_stacjonarny.csv
 echo "version,compiler,N,threads,time_ms" > $OUTPUT
 
 # ===== funkcja licząca średnią =====
