@@ -1,4 +1,4 @@
-﻿// Kompilacja g++ -O2 stat_mem.cpp -o static
+﻿// Kompilacja g++ -O3 stat_mem.cpp -o static
 // O2 - umiarkowana optymalizacja
 #include <iostream>
 #include <vector>
@@ -8,7 +8,7 @@
 
 using T = int;
 
-constexpr int N = 1024; // statyczny rozmiar
+constexpr int N = 2048; // statyczny rozmiar
 
 T A[N][N];
 T B[N][N];

@@ -1,4 +1,4 @@
-﻿// Kompilacja g++ -O2 dyn_mem.cpp -o dynamic
+﻿// Kompilacja g++ -O3 dyn_mem.cpp -o dynamic
 // O2 - umiarkowana optymalizacja
 #include <iostream>
 #include <vector>
@@ -19,6 +19,12 @@ void func(int tid, T** A, T** B, T** C, int N, int num_threads) {
             C[i][j] = 0;
             for (int k = 0; k < N; ++k) {
                 C[i][j] += A[i][k] * B[k][j]; // ❗ brak transpozycji
+                //T sum = 0;                    // <---- Lekka optymalizacja dostępności pamięci
+                //for (int k = 0; k < N; ++k) {
+                //    sum += A[i][k] * B[k][j];
+                //}
+                //C[i][j] = sum;
+
             }
         }
     }

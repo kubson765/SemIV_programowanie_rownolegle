@@ -8,10 +8,10 @@ SIMD=./vec.exe
 
 # parametry testów
 THREADS=(1 2 4 8 16)
-SIZES=(1024 2048 4096)
+SIZES=(512 1024 2048)
 
 # plik wynikowy
-OUTPUT=results.csv
+OUTPUT=results_stacjonarny.csv
 
 echo "version,N,threads,time_ms" > $OUTPUT
 
