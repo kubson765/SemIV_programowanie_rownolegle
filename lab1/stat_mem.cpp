@@ -1,4 +1,6 @@
-﻿#include <iostream>
+﻿// Kompilacja g++ -O2 stat_mem.cpp -o static
+// O2 - umiarkowana optymalizacja
+#include <iostream>
 #include <vector>
 #include <chrono>
 #include <thread>
@@ -36,6 +38,7 @@ int main(int argc, char** argv) {
     }
 
     int num_threads = std::stoi(argv[1]);
+    num_threads = std::min(num_threads, N);
 
     // inicjalizacja
     for (int i = 0; i < N; ++i)
