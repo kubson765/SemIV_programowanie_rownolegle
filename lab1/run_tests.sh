@@ -1,53 +1,84 @@
 #!/bin/bash
 
-# programy
-STATIC=./static.exe
-DYNAMIC=./dynamic.exe
-CACHE=./cache.exe
-SIMD=./vec.exe
-
-# parametry testów
 THREADS=(1 2 4 8 16)
 SIZES=(512 1024 2048)
+RUNS=3
 
-# plik wynikowy
-OUTPUT=results_stacjonarny.csv
+OUTPUT=results_laptop_podlaczony.csv
+echo "version,compiler,N,threads,time_ms" > $OUTPUT
 
-echo "version,N,threads,time_ms" > $OUTPUT
-
-run_test() {
-    local name=$1
-    local cmd=$2
-    local N=$3
-    local T=$4
+# ===== funkcja licząca średnią =====
+run_avg() {
+    local cmd=$1
+    local N=$2
+    local T=$3
 
     SUM=0
-    RUNS=3
 
     for i in $(seq 1 $RUNS); do
         val=$($cmd $N $T | grep -oP 'Time: \K[0-9]+')
         SUM=$((SUM + val))
     done
 
-    AVG=$((SUM / RUNS))
-
-    echo "$name,$N,$T,$AVG" >> $OUTPUT
-    echo "$name N=$N T=$T -> avg $AVG ms"
+    echo $((SUM / RUNS))
 }
+
+# ===== STATYCZNE =====
+run_static() {
+    local exe=$1
+    local N=$2
+    local T=$3
+
+    val=$($exe $T | grep -oP 'Time: \K[0-9]+')
+
+    echo "static,gpp,$N,$T,$val" >> $OUTPUT
+    echo "static N=$N T=$T -> $val ms"
+}
+
+# ===== dynamic/cache =====
+run_standard() {
+    local name=$1
+    local exe=$2
+    local N=$3
+    local T=$4
+
+    val=$(run_avg "$exe" $N $T)
+
+    echo "$name,gpp,$N,$T,$val" >> $OUTPUT
+    echo "$name N=$N T=$T -> avg $val ms"
+}
+
+# ===== SIMD (różne kompilatory) =====
+run_simd() {
+    local compiler=$1
+    local exe=$2
+    local N=$3
+    local T=$4
+
+    val=$(run_avg "$exe" $N $T)
+
+    echo "vect,$compiler,$N,$T,$val" >> $OUTPUT
+    echo "vect-$compiler N=$N T=$T -> avg $val ms"
+}
+
+# ===== MAIN LOOP =====
 
 for N in "${SIZES[@]}"; do
     for T in "${THREADS[@]}"; do
 
-        run_test "dynamic" "$DYNAMIC" $N $T
-        run_test "cache" "$CACHE" $N $T
-        run_test "simd" "$SIMD" $N $T
+        # static
+        run_static "./static_${N}.exe" $N $T
 
-        # statyczna nie ma N
-        result=$($STATIC $T | grep -o '[0-9]\+')
-        echo "static,$N,$T,$result" >> $OUTPUT
-        echo "static N=$N T=$T -> $result ms"
+        # dynamic/cache
+        run_standard "dynamic" "./dynamic.exe" $N $T
+        run_standard "cache" "./cache.exe" $N $T
 
+        # SIMD kompilatory
+        run_simd "g++" "./vect_gpp.exe" $N $T
+        run_simd "clang" "./vect_clang.exe" $N $T
+
+        sleep 1
     done
 done
 
-echo "DONE -> wyniki w $OUTPUT"
+echo "DONE -> $OUTPUT"
